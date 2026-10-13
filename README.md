@@ -85,7 +85,118 @@ El sistema requiere dos bases de datos MySQL independientes:
 
 ---
 
-## 6. Credenciales de Prueba del Sistema
+## 6. Archivos de Configuración por Proyecto (`api.properties` y `db.properties`)
+
+Cada módulo gestiona sus conexiones a base de datos y endpoints de servicios externos de forma desacoplada en su carpeta `src/main/resources/`:
+
+### 6.1. `novasalud-citas-web` (`src/main/resources/api.properties`)
+Configura las URLs base de los microservicios que consume el cliente HTTP (`ApiClient.java`) del frontend de citas:
+```properties
+# URL Base para Citas, Pacientes, Médicos, Horarios, Especialidades, Tarifas
+citas.api.url=http://localhost:8080/novasalud-citas-api/api
+
+# URL Base para Atención Médica e Historias Clínicas
+atencion.api.url=http://localhost:8082/novasalud-atencion-api/api
+
+# URL Base para Orquestador SOA
+orchestrator.api.url=http://localhost:8083/novasalud-orchestrator/api
+
+# Fallback Legacy
+api.base.url=http://localhost:8080/novasalud-citas-api/api
+```
+
+---
+
+### 6.2. `novasalud-citas-api` (`src/main/resources/db.properties`)
+Configura la conexión a la base de datos de Citas, el pool HikariCP y la firma de tokens JWT:
+```properties
+# Configuración de Base de Datos - NovaSalud Backend API
+db.url=jdbc:mysql://localhost:3306/bd_citasmedicas_v321?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+db.user=usuario_citas
+db.password=ISO/IEC27001
+db.driver=com.mysql.cj.jdbc.Driver
+
+# Parámetros de Configuración del Pool HikariCP
+db.pool.maximumPoolSize=10
+db.pool.minimumIdle=2
+db.pool.idleTimeout=30000
+db.pool.connectionTimeout=10000
+db.pool.maxLifetime=1800000
+
+# Clave Secreta para Firma de Tokens JWT (256-bit HMAC Secret)
+jwt.secret=NovaSaludSystemSecretKeyHMAC256BitsLongForSecureJwtTokenSigning2026UTP
+```
+
+---
+
+### 6.3. `novasalud-atencion-api` (`src/main/resources/db.properties`)
+Configura la conexión a la base de datos para atención clínica, pool HikariCP y validación JWT:
+```properties
+# Configuración de Base de Datos - NovaSalud Atención API
+db.url=jdbc:mysql://localhost:3306/bd_citasmedicas_v321?useSSL=false&allowPublicKeyRetrieval=true&noAccessToProcedureBodies=true&serverTimezone=UTC
+db.user=usuario_citas
+db.password=ISO/IEC27001
+db.driver=com.mysql.cj.jdbc.Driver
+
+# Parámetros de Configuración del Pool HikariCP
+db.pool.maximumPoolSize=10
+db.pool.minimumIdle=2
+db.pool.idleTimeout=30000
+db.pool.connectionTimeout=10000
+db.pool.maxLifetime=1800000
+
+# Clave Secreta para Firma de Tokens JWT (256-bit HMAC Secret)
+jwt.secret=NovaSaludSystemSecretKeyHMAC256BitsLongForSecureJwtTokenSigning2026UTP
+```
+
+---
+
+### 6.4. `novasalud-orchestrator` (`src/main/resources/orchestrator.properties`)
+Configura los endpoints de los 3 microservicios coordinados por el orquestador stateless:
+```properties
+# Configuración de URLs de Microservicios Backend para NovaSalud Orchestrator
+citas.api.url=http://localhost:8080/novasalud-citas-api/api
+atencion.api.url=http://localhost:8082/novasalud-atencion-api/api
+farmacia.api.url=http://localhost:8081/novasalud-farmacia-api/api
+
+# Clave Secreta JWT compartida
+jwt.secret=NovaSaludSystemSecretKeyHMAC256BitsLongForSecureJwtTokenSigning2026UTP
+```
+
+---
+
+### 6.5. `novasalud-farmacia-api` (`src/main/resources/db.properties`)
+Configura la base de datos aislada de farmacia (`bd_famacia`), pool HikariCP y clave JWT propia:
+```properties
+# Configuración de Base de Datos - NovaSalud Farmacia Backend API
+db.url=jdbc:mysql://localhost:3306/bd_famacia?useSSL=false&allowPublicKeyRetrieval=true&noAccessToProcedureBodies=true&serverTimezone=UTC
+db.user=usuario_farmacia
+db.password=Farmacia2026*
+db.driver=com.mysql.cj.jdbc.Driver
+
+# Parámetros de Configuración del Pool HikariCP
+db.pool.maximumPoolSize=10
+db.pool.minimumIdle=2
+db.pool.idleTimeout=30000
+db.pool.connectionTimeout=10000
+db.pool.maxLifetime=1800000
+
+# Clave Secreta para Firma de Tokens JWT (256-bit HMAC Secret)
+jwt.secret=NovaSaludFarmaciaSystemSecretKeyHMAC256BitsLongForSecureJwtTokenSigning2026UTP
+```
+
+---
+
+### 6.6. `novasalud-farmacia-web` (`src/main/resources/api.properties`)
+Configura la ruta de la API REST de Farmacia consumida por la interfaz web de farmacia:
+```properties
+# URL Base de la API Backend de Farmacia (novasalud-farmacia-api)
+api.base.url=http://localhost:8080/novasalud-farmacia-api/api
+```
+
+---
+
+## 7. Credenciales de Prueba del Sistema
 
 ### Usuarios de Acceso Web:
 - **Administrador Citas:** `administrador` / `123456` (Rol: `ADMIN`)
@@ -96,9 +207,9 @@ El sistema requiere dos bases de datos MySQL independientes:
 
 ---
 
-## 7. Compilación, Instalación y Puesta en Marcha
+## 8. Compilación, Instalación y Puesta en Marcha
 
-### 7.1. Requisitos Previos
+### 8.1. Requisitos Previos
 * **Java Development Kit (JDK):** Versión 17 o superior (`java -version`).
 * **Apache Maven:** Versión 3.8 o superior (`mvn -version`).
 * **MySQL Server:** Versión 8.0 o superior en puerto 3306.
@@ -106,7 +217,7 @@ El sistema requiere dos bases de datos MySQL independientes:
 
 ---
 
-### 7.2. Paso 1: Despliegue de Bases de Datos en MySQL
+### 8.2. Paso 1: Despliegue de Bases de Datos en MySQL
 
 Ejecutar los scripts oficiales en el orden establecido:
 
@@ -124,7 +235,7 @@ mysql -u usuario_farmacia -pFarmacia2026* < "databaseMysql/Farmacia/03_bd_farmac
 
 ---
 
-### 7.3. Paso 2: Compilación de Todos los Módulos con Maven
+### 8.3. Paso 2: Compilación de Todos los Módulos con Maven
 
 Desde la raíz del proyecto (`SistemaARQ`), ejecutar el comando Maven multi-módulo para compilar y empaquetar todos los proyectos en un solo paso:
 
@@ -144,7 +255,7 @@ Este comando generará los artefactos `.war` en las carpetas `target/` de cada m
 
 ---
 
-### 7.4. Paso 3: Despliegue en Apache Tomcat 10.1+
+### 8.4. Paso 3: Despliegue en Apache Tomcat 10.1+
 
 1. Iniciar Apache Tomcat.
 2. Copiar los archivos `.war` generados a la carpeta `webapps/` de tu instalación de Tomcat.
@@ -152,7 +263,7 @@ Este comando generará los artefactos `.war` en las carpetas `target/` de cada m
 
 ---
 
-### 7.5. Paso 4: Acceso y Verificación del Sistema
+### 8.5. Paso 4: Acceso y Verificación del Sistema
 
 Una vez desplegados los módulos, puedes acceder a través de tu navegador web:
 
