@@ -1,0 +1,95 @@
+# =============================================================================
+# NovaSalud V3.2.1 - Despliegue completo con Docker Compose
+# Levantar:  docker compose up -d --build
+# Detener:   docker compose down        (agregar -v para borrar la BD)
+# =============================================================================
+
+x-db-citas: &db-citas
+  DB_URL: jdbc:mysql://mysql:3306/bd_citasmedicas_v321?useSSL=false&allowPublicKeyRetrieval=true&noAccessToProcedureBodies=true&serverTimezone=UTC
+  DB_USER: usuario_citas
+  DB_PASSWORD: ISO/IEC27001
+  TZ: America/Lima
+
+x-depends-db: &depends-db
+  mysql:
+    condition: service_healthy
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: novasalud-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      TZ: America/Lima
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    ports:
+      - "3307:3306"   # 3307 para no chocar con un MySQL local
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # Los scripts se ejecutan en orden alfabético solo la primera vez
+      - ./databaseMysql/v321/00_instalacion_completa_bd_citasmedicas_v321.sql:/docker-entrypoint-initdb.d/01_citas_esquema.sql:ro
+      - ./databaseMysql/v321/01_stored_procedures_completos_v321.sql:/docker-entrypoint-initdb.d/02_citas_sp.sql:ro
+      - ./databaseMysql/Farmacia/00_bd_farmacia_v1.sql:/docker-entrypoint-initdb.d/03_farmacia_esquema.sql:ro
+      - ./databaseMysql/Farmacia/02_insert_data_farmacia_v1.sql:/docker-entrypoint-initdb.d/04_farmacia_datos.sql:ro
+      - ./databaseMysql/Farmacia/03_bd_farmacia_sp_v1.sql:/docker-entrypoint-initdb.d/05_farmacia_sp.sql:ro
+      - ./docker/mysql/99_usuarios_docker.sql:/docker-entrypoint-initdb.d/99_usuarios_docker.sql:ro
+    healthcheck:
+      # Solo responde cuando la inicialización terminó (usuario '%' creado y TCP activo)
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "usuario_farmacia", "-pFarmacia2026*"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  citas-api:
+    build: { context: ., args: { MODULE: novasalud-citas-api } }
+    container_name: novasalud-citas-api
+    environment: *db-citas
+    ports: ["8084:8080"]
+    depends_on: *depends-db
+
+  atencion-api:
+    build: { context: ., args: { MODULE: novasalud-atencion-api } }
+    container_name: novasalud-atencion-api
+    environment: *db-citas
+    ports: ["8082:8080"]
+    depends_on: *depends-db
+
+  farmacia-api:
+    build: { context: ., args: { MODULE: novasalud-farmacia-api } }
+    container_name: novasalud-farmacia-api
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/bd_famacia?useSSL=false&allowPublicKeyRetrieval=true&noAccessToProcedureBodies=true&serverTimezone=UTC
+      DB_USER: usuario_farmacia
+      DB_PASSWORD: Farmacia2026*
+      TZ: America/Lima
+    ports: ["8085:8080"]
+    depends_on: *depends-db
+
+  orchestrator:
+    build: { context: ., args: { MODULE: novasalud-orchestrator } }
+    container_name: novasalud-orchestrator
+    environment:
+      CITAS_API_URL: http://citas-api:8080/novasalud-citas-api/api
+      ATENCION_API_URL: http://atencion-api:8080/novasalud-atencion-api/api
+      FARMACIA_API_URL: http://farmacia-api:8080/novasalud-farmacia-api/api
+      TZ: America/Lima
+    ports: ["8083:8080"]
+    depends_on: [citas-api, atencion-api, farmacia-api]
+
+  citas-web:
+    build: { context: ., args: { MODULE: novasalud-citas-web } }
+    container_name: novasalud-citas-web
+    environment: { TZ: America/Lima }
+    ports: ["8080:8080"]
+    depends_on: [citas-api, atencion-api, orchestrator]
+
+  farmacia-web:
+    build: { context: ., args: { MODULE: novasalud-farmacia-web } }
+    container_name: novasalud-farmacia-web
+    environment: { TZ: America/Lima }
+    ports: ["8081:8080"]
+    depends_on: [farmacia-api]
+
+volumes:
+  mysql-data:
