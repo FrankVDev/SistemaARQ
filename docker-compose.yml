@@ -4,10 +4,15 @@
 # Detener:   docker compose down        (agregar -v para borrar la BD)
 # =============================================================================
 
+# Clave JWT compartida por todos los servicios backend (Citas, Atención,
+# Farmacia y Orquestador). Puede sobrescribirse con un archivo .env
+x-jwt-secret: &jwt-secret ${NOVASALUD_JWT_SECRET:-NovaSaludSystemSecretKeyHMAC256BitsLongForSecureJwtTokenSigning2026UTP}
+
 x-db-citas: &db-citas
   DB_URL: jdbc:mysql://mysql:3306/bd_citasmedicas_v321?useSSL=false&allowPublicKeyRetrieval=true&noAccessToProcedureBodies=true&serverTimezone=UTC
   DB_USER: usuario_citas
   DB_PASSWORD: ISO/IEC27001
+  NOVASALUD_JWT_SECRET: *jwt-secret
   TZ: America/Lima
 
 x-depends-db: &depends-db
@@ -62,6 +67,7 @@ services:
       DB_URL: jdbc:mysql://mysql:3306/bd_famacia?useSSL=false&allowPublicKeyRetrieval=true&noAccessToProcedureBodies=true&serverTimezone=UTC
       DB_USER: usuario_farmacia
       DB_PASSWORD: Farmacia2026*
+      NOVASALUD_JWT_SECRET: *jwt-secret
       TZ: America/Lima
     ports: ["8085:8080"]
     depends_on: *depends-db
@@ -73,6 +79,7 @@ services:
       CITAS_API_URL: http://citas-api:8080/novasalud-citas-api/api
       ATENCION_API_URL: http://atencion-api:8080/novasalud-atencion-api/api
       FARMACIA_API_URL: http://farmacia-api:8080/novasalud-farmacia-api/api
+      NOVASALUD_JWT_SECRET: *jwt-secret
       TZ: America/Lima
     ports: ["8083:8080"]
     depends_on: [citas-api, atencion-api, farmacia-api]
