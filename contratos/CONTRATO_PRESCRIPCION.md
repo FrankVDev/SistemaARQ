@@ -89,10 +89,18 @@ Formato neutral, independiente de cómo Farmacia almacena los datos.
 | Situación | Farmacia API | Respuesta del ESB al Orquestador | Estado que registra el Orquestador |
 | --- | --- | --- | --- |
 | Receta registrada | `201 Created` + `idPrescripcion` | `201` + `{ idPrescripcion, codigoPrescripcion }` | `ENVIADO_A_FARMACIA` |
-| Receta ya registrada antes (mismo `RX-{idAtencion}`) | Error por código duplicado | `200` + `{ codigoPrescripcion, duplicado: true }` | `ENVIADO_A_FARMACIA` |
+| Receta ya registrada antes (mismo `RX-{idAtencion}`) | `409 Conflict` + `{ "error": "PRESCRIPCION_DUPLICADA", codigoPrescripcion }` | `200` + `{ codigoPrescripcion, duplicado: true }` | `ENVIADO_A_FARMACIA` |
 | Mensaje inválido (sin medicamentos, sin nombre o cantidad) | — (el ESB no lo envía) | `400` + detalle de la validación | Error del proceso |
 | Token inválido | `401` | `401` | Error del proceso |
 | Farmacia no disponible (tras los reintentos del ESB) | Timeout / `5xx` | `503` | `PENDIENTE_ENVIO_FARMACIA` |
+
+**Regla de reintentos del ESB:** solo se reintenta ante *timeout* o `5xx`. Un `409`
+significa que la receta ya existe y **no** se reintenta; un `400` o `401` es un error
+del mensaje y tampoco se reintenta.
+
+> **Nota:** antes de esta versión, Farmacia API respondía a un código duplicado con
+> `500` y el mensaje técnico de MySQL (`Duplicate entry ...`), lo que impedía distinguir
+> una receta repetida de una caída real. Ahora responde `409 Conflict`.
 
 ---
 
