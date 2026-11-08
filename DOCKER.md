@@ -13,8 +13,8 @@ La primera vez MySQL ejecuta los scripts de `databaseMysql/` (tarda 1–2 minuto
 | --- | --- |
 | Frontend Citas | http://localhost:8080/novasalud-citas-web |
 | Frontend Farmacia | http://localhost:8081/novasalud-farmacia-web |
-| Atención API | http://localhost:8082/novasalud-atencion-api/api |
-| Orquestador | http://localhost:8083/novasalud-orchestrator/api |
+| Atención API (Swagger) | http://localhost:8082/novasalud-atencion-api/swagger/ |
+| Orquestador (Swagger) | http://localhost:8083/novasalud-orchestrator/swagger/ |
 | Citas API (Swagger) | http://localhost:8084/novasalud-citas-api/swagger/ |
 | Farmacia API (Swagger) | http://localhost:8085/novasalud-farmacia-api/swagger/ |
 | MySQL | localhost:3307 (root / root) |
