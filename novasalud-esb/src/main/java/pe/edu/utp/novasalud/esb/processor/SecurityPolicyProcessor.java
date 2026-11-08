@@ -32,6 +32,8 @@ public class SecurityPolicyProcessor implements Processor {
                     ? "Falta la cabecera Authorization: Bearer <token>"
                     : "Token JWT inválido o expirado";
             EsbResponses.error(exchange, 401, "NO_AUTORIZADO", motivo);
+            // Las solicitudes rechazadas también quedan en el registro del ESB.
+            AuditLogProcessor.fin(exchange, exchange.getProperty("esbServicio", String.class));
             exchange.setRouteStop(true);
         }
     }
