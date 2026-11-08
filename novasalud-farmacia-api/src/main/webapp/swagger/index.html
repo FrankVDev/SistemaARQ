@@ -51,6 +51,16 @@
                 SwaggerUIBundle.plugins.DownloadUrl
             ],
             layout: "StandaloneLayout",
+            // La especificación OpenAPI no incluye el context path de Tomcat
+            // (/novasalud-xxx-api). Se antepone a cada solicitud que no lo tenga.
+            requestInterceptor: function (req) {
+                const u = new URL(req.url, window.location.origin);
+                if (u.origin === window.location.origin && contextPath && !u.pathname.startsWith(contextPath + '/')) {
+                    u.pathname = contextPath + u.pathname;
+                    req.url = u.toString();
+                }
+                return req;
+            },
             displayRequestDuration: true,
             docExpansion: "list",
             filter: true
