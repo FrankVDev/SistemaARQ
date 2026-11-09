@@ -199,11 +199,20 @@ api.base.url=http://localhost:8080/novasalud-farmacia-api/api
 ## 7. Credenciales de Prueba del Sistema
 
 ### Usuarios de Acceso Web:
-- **Administrador Citas:** `administrador` / `123456` (Rol: `ADMIN`)
-- **Recepcionista:** `recepcionista` / `123456` (Rol: `RECEPCIONISTA`)
-- **Médico:** `doctor` / `123456` (Rol: `DOCTOR`)
-- **Químico Farmacéutico:** `qf_martinez` / `123456` (Rol: `QUIMICO_FARMACEUTICO`)
-- **Cajero Farmacia:** `cajero01` / `123456` (Rol: `TECNICO_FARMACIA`)
+
+**Sistema de Citas** (http://localhost:8080/novasalud-citas-web) – contraseña `123456`:
+- **Administrador:** `administrador` (Rol: `ADMIN`)
+- **Recepcionistas:** `recepcionista1`, `recepcionista2` (Rol: `RECEPCIONISTA`)
+- **Cajeros:** `cajero1`, `cajero2` (Rol: `CAJERO`)
+- **Dirección:** `direccion` (Rol: `DIRECCION`)
+- **Médicos:** `valeria.rojas`, `luis.herrera`, `camila.torres`, `marco.salas`, `ana.beltran`, `diego.munoz`, entre otros (Rol: `DOCTOR`)
+
+> El usuario `doctor` existe en la base de datos pero está **INACTIVO**; para pruebas use un médico activo, por ejemplo `valeria.rojas`.
+
+**Sistema de Farmacia** (http://localhost:8081/novasalud-farmacia-web) – contraseña `Farmacia2026*`:
+- **Administrador:** `admin` (Rol: `ADMINISTRADOR`)
+- **Químico Farmacéutico:** `qf_martinez` (Rol: `QUIMICO_FARMACEUTICO`)
+- **Técnico de Farmacia:** `cajero01` (Rol: `TECNICO_FARMACIA`)
 
 ---
 

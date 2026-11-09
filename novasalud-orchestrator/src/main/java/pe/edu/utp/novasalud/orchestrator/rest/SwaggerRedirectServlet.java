@@ -11,6 +11,6 @@ public class SwaggerRedirectServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.sendRedirect(req.getContextPath() + "/swagger-ui/index.html");
+        resp.sendRedirect(req.getContextPath() + "/swagger/index.html");
     }
 }

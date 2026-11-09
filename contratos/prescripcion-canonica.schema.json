@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "novasalud/prescripcion-canonica",
+  "title": "Prescripción canónica (Orquestador → ESB)",
+  "description": "Mensaje neutral que envía el Orquestador al ESB. No depende de cómo Farmacia almacena la información.",
+  "type": "object",
+  "required": ["idAtencion", "idCita", "idPaciente", "idMedico", "medicamentos"],
+  "properties": {
+    "idAtencion": { "type": "integer", "minimum": 1, "description": "ID de la atención en Atención API" },
+    "idCita": { "type": "integer", "minimum": 1, "description": "ID de la cita en Citas API" },
+    "idPaciente": { "type": "integer", "minimum": 1, "description": "ID del paciente en Citas API" },
+    "idMedico": { "type": "integer", "minimum": 1, "description": "ID del médico en Citas API" },
+    "indicacionesGenerales": { "type": ["string", "null"], "maxLength": 700 },
+    "medicamentos": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["nombre", "cantidad"],
+        "properties": {
+          "nombre": { "type": "string", "minLength": 1, "maxLength": 150 },
+          "cantidad": { "type": "integer", "minimum": 1 },
+          "dosis": { "type": ["string", "null"], "maxLength": 100 },
+          "frecuencia": { "type": ["string", "null"], "maxLength": 100 },
+          "duracion": { "type": ["string", "null"], "maxLength": 100 },
+          "indicaciones": { "type": ["string", "null"], "maxLength": 500 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

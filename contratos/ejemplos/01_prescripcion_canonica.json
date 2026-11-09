@@ -1,0 +1,25 @@
+{
+  "idAtencion": 25,
+  "idCita": 40,
+  "idPaciente": 3,
+  "idMedico": 1,
+  "indicacionesGenerales": "Tomar con alimentos. Hidratación abundante y reposo por 48 horas.",
+  "medicamentos": [
+    {
+      "nombre": "Paracetamol 500 mg",
+      "cantidad": 10,
+      "dosis": "1 tableta",
+      "frecuencia": "Cada 8 horas",
+      "duracion": "3 días",
+      "indicaciones": "Solo si presenta fiebre"
+    },
+    {
+      "nombre": "Loratadina 10 mg",
+      "cantidad": 5,
+      "dosis": "1 tableta",
+      "frecuencia": "Cada 24 horas",
+      "duracion": "5 días",
+      "indicaciones": null
+    }
+  ]
+}

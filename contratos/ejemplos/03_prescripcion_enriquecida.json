@@ -1,0 +1,31 @@
+{
+  "idPrescripcion": 3,
+  "codigoPrescripcion": "RX-25",
+  "idPacienteExterno": 3,
+  "idMedicoExterno": 1,
+  "idAtencionExterna": 25,
+  "instruccionesGenerales": "Tomar con alimentos. Hidratación abundante y reposo por 48 horas.",
+  "estado": "PENDIENTE",
+  "fechaPrescripcion": 1794171000000,
+  "nombrePaciente": "Lucía Chávez Paredes",
+  "dniPaciente": "70000003",
+  "nombreMedico": "Valeria Rojas Medina",
+  "numeroColegiaturaMedico": "CMP-10101",
+  "diagnostico": "J06.9 - Infección aguda de las vías respiratorias superiores",
+  "detalles": [
+    {
+      "nombreMedicamento": "Paracetamol 500 mg",
+      "cantidad": 10,
+      "dosis": "1 tableta",
+      "frecuencia": "Cada 8 horas",
+      "duracion": "3 días"
+    },
+    {
+      "nombreMedicamento": "Loratadina 10 mg",
+      "cantidad": 5,
+      "dosis": "1 tableta",
+      "frecuencia": "Cada 24 horas",
+      "duracion": "5 días"
+    }
+  ]
+}

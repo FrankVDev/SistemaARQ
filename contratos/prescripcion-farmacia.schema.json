@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "novasalud/prescripcion-farmacia",
+  "title": "Prescripción en formato Farmacia (ESB → Farmacia API)",
+  "description": "Cuerpo de POST /api/prescripciones de novasalud-farmacia-api, producido por la transformación del ESB.",
+  "type": "object",
+  "required": ["codigoPrescripcion", "idPacienteExterno", "idMedicoExterno", "idAtencionExterna", "detalles"],
+  "properties": {
+    "codigoPrescripcion": { "type": "string", "pattern": "^RX-[0-9]+$", "maxLength": 50 },
+    "idPacienteExterno": { "type": "integer", "minimum": 1 },
+    "idMedicoExterno": { "type": "integer", "minimum": 1 },
+    "idAtencionExterna": { "type": "integer", "minimum": 1 },
+    "instruccionesGenerales": { "type": ["string", "null"], "maxLength": 700 },
+    "estado": { "type": "string", "enum": ["PENDIENTE"] },
+    "detalles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["nombreMedicamento", "cantidad"],
+        "properties": {
+          "idMedicamento": { "type": ["integer", "null"] },
+          "nombreMedicamento": { "type": "string", "minLength": 1, "maxLength": 150 },
+          "cantidad": { "type": "integer", "minimum": 1 },
+          "dosis": { "type": ["string", "null"], "maxLength": 100 },
+          "frecuencia": { "type": ["string", "null"], "maxLength": 100 },
+          "duracion": { "type": ["string", "null"], "maxLength": 100 },
+          "indicaciones": { "type": ["string", "null"], "maxLength": 500 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
